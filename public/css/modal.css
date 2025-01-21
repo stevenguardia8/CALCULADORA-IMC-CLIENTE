@@ -1,0 +1,81 @@
+/* The Modal (background) */
+.card-modal {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: hidden;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 550px;
+  /* Could be more or less, depending on screen size */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.data-modal {
+  display: flex;
+}
+
+/* The Close Button */
+#close-modal {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+#close-modal:hover, #close-modal:focus {
+  color: black;
+  text-decoration: none;
+}
+
+/* Header and content style */
+h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
+p {
+  font-size: 18px;
+  color: #555;
+  margin: 10px 0;
+}
+
+br {
+  margin: 20px 0;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@media only screen and (max-width: 600px) {
+  .modal-content {
+    width: 310px;
+  }
+}
+
+/*# sourceMappingURL=modal.css.map */

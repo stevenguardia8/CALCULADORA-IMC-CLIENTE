@@ -1,0 +1,119 @@
+extends layout-navbar 
+
+block content
+    .card
+        a(href="/" class="back")
+            span(class="material-symbols-outlined") arrow_back
+        .card-content
+            h2 Historial de cálculos
+
+    if resultados && resultados.length > 0
+        each result, index in resultados
+            if result 
+                .card(style="display: flex; flex-direction: column; align-items: center; margin: 20px;")
+                    .card-content
+                        h2 Cálculo #{index + 1}
+                        p#result Tipo de cálculo: #{result.tipo_calculo || 'No especificado'}
+                        p#result Fecha: #{result.fecha_consulta ? new Date(result.fecha_consulta).toLocaleDateString("es-ES") : 'Fecha no disponible'}
+                        p#result Resultado: #{result.resultado_calculado || 'Sin resultado'}
+                        p#result-category Categoría: #{result.categoria || 'Sin categoría'}
+                        p#result-recommendations Recomendaciones: #{result.recomendaciones || 'Sin recomendaciones'}
+                        br
+                        canvas(id=`result-chart-${index}`) // Canvas único para cada gráfico
+    else
+        .card(style="display: flex; flex-direction: column; align-items: center; margin: 20px;")
+          .card-content
+              h2 No cuentas con un historial
+              p No hay resultados disponibles.
+
+    // Incluir Chart.js
+    script(src="https://cdn.jsdelivr.net/npm/chart.js")
+    //- Script para inicializar Notyf
+    script(src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js")
+
+    // Crear los gráficos dinámicamente
+    script.
+        document.addEventListener('DOMContentLoaded', function() {
+            // Datos de categorías
+            const categorias = ['Bajo peso', 'Normal', 'Sobrepeso', 'Obesidad leve', 'Obesidad moderada', 'Obesidad severa'];
+            
+            // Arreglo de resultados (esto debería venir desde tu back-end)
+            const resultados = !{JSON.stringify(resultados)};
+
+            resultados.forEach((result, index) => {
+                const resultadoCalculado = result.resultado_calculado;
+                let categoriaIndex = -1;
+
+                // Determinar la categoría basada en el valor calculado
+                if (resultadoCalculado !== undefined) {
+                    if (resultadoCalculado < 18.5) categoriaIndex = 0;  // Bajo peso
+                    else if (resultadoCalculado >= 18.5 && resultadoCalculado < 24.9) categoriaIndex = 1;  // Normal
+                    else if (resultadoCalculado >= 25 && resultadoCalculado < 29.9) categoriaIndex = 2;  // Sobrepeso
+                    else if (resultadoCalculado >= 30 && resultadoCalculado < 34.9) categoriaIndex = 3;  // Obesidad leve
+                    else if (resultadoCalculado >= 35 && resultadoCalculado < 39.9) categoriaIndex = 4;  // Obesidad moderada
+                    else if (resultadoCalculado >= 40) categoriaIndex = 5;  // Obesidad severa
+                }
+
+                // Crear el gráfico
+                const ctx = document.getElementById(`result-chart-${index}`).getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: categorias,
+                        datasets: [{
+                            label: 'Valor Calculado',
+                            data: new Array(categorias.length).fill(null),
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                            pointHoverBackgroundColor: 'rgba(0, 123, 255, 1)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Categorías'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Valor'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Colocar el valor calculado en la categoría correspondiente
+                if (categoriaIndex !== -1 && resultadoCalculado !== undefined) {
+                    chart.data.datasets[0].data[categoriaIndex] = resultadoCalculado;
+                    chart.update();
+                }
+            });
+        });
+        // Crear una instancia de Notyf
+        const notyf = new Notyf({
+            duration: 5000, // Duración de la notificación (ms)
+            position: {
+            x: 'right',
+            y: 'top'
+            },
+            dismissible: true, // Permitir cerrar la notificación manualmente
+        });
+        // Mostrar notificaciones si el mensaje está definido
+        if (typeof !{JSON.stringify(message)} !== 'undefined') {
+            const message = !{JSON.stringify(message)};
+            if (message.type === 'success') {
+            notyf.success(message.text);
+            } else if (message.type === 'error') {
+            notyf.error(message.text);
+            }
+        }

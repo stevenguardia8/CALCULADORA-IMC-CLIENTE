@@ -1,0 +1,121 @@
+doctype html
+html(lang="es")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200")
+        link(rel="stylesheet", href="/css/styles.css")
+        link(rel="stylesheet", href="/css/navbar.css")
+        link(rel="stylesheet", href="/css/forms-calcs.css")
+        link(rel="stylesheet", href="/css/modal.css")
+        link(rel="stylesheet", href="/css/grafico.css")
+        link(rel="stylesheet", href="/css/historial.css")
+        //- Incluyendo los estilos de Notyf
+        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css")
+        
+        title Calculadora nutricional
+    body
+        .contenedorNavBar
+            nav#navbar
+                ol#ol-navbar
+                    if user
+                        li.li-navbar-no-enlace #{username}
+                        li.li-navbar
+                            a.enlace(href="/history") Historial calculos
+                        li.li-navbar
+                            a.enlace(href="/logout") Cerrar sesión 
+                    if !user
+                        li.li-navbar
+                            a.enlace(href="/login") Iniciar sesión
+                        li.li-navbar
+                            a.enlace(href="/importante") Importante
+                    li.li-navbar
+                        a.enlace(href="/leeme") Descripción
+        // Modal de resultados
+        if result
+            .card-modal(id="result-modal", style="display: flex; justify-content: center; align-items: center;")
+                .modal-content
+                    span(id="close-modal") &times;
+                    h2 Resultados
+                    p#result Tipo de calculo: #{result.tipo_calc} 
+                    p#result Resultado: #{result.BMI || result.IGC} 
+                    p#result-category Categoria: #{result.categoria}
+                    p#result-recommendations Recomendaciones: #{result.recomendaciones}
+                    br
+                    canvas(id="result-chart")  <!-- Aquí añadimos el canvas para el gráfico -->
+
+                <!-- Incluir Chart.js -->
+                script(src="https://cdn.jsdelivr.net/npm/chart.js")
+
+                <!-- Crear el gráfico -->
+                script.
+                    // Esperamos a que el contenido se cargue
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var ctx = document.getElementById('result-chart').getContext('2d');
+                        
+                        // Datos de categorías (por ejemplo, rango de BMI o IGC)
+                        const categorias = ['Bajo peso', 'Normal', 'Sobrepeso', 'Obesidad leve', 'Obesidad moderada', 'Obesidad severa'];
+
+                        // Determinar el valor calculado (BMI o IGC)
+                        const resultadoCalculado = #{result.BMI || result.IGC};
+                        
+                        // Función para determinar la categoría en función del valor calculado
+                        let categoriaIndex = -1;
+                        if (resultadoCalculado !== undefined) {
+                            if (resultadoCalculado < 18.5) categoriaIndex = 0;  // Bajo peso
+                            else if (resultadoCalculado >= 18.5 && resultadoCalculado < 24.9) categoriaIndex = 1;  // Normal
+                            else if (resultadoCalculado >= 25 && resultadoCalculado < 29.9) categoriaIndex = 2;  // Sobrepeso
+                            else if (resultadoCalculado >= 30 && resultadoCalculado < 34.9) categoriaIndex = 3;  // Obesidad leve
+                            else if (resultadoCalculado >= 35 && resultadoCalculado < 39.9) categoriaIndex = 4;  // Obesidad moderada
+                            else if (resultadoCalculado >= 40) categoriaIndex = 5;  // Obesidad severa
+                        }
+
+                        // Crear un gráfico de líneas
+                        var chart = new Chart(ctx, {
+                            type: 'line',  // Tipo de gráfico, en este caso una línea
+                            data: {
+                                labels: categorias,  // Las categorías serán las etiquetas del eje X
+                                datasets: [{
+                                    label: 'Valor Calculado',  // Etiqueta para el valor calculado
+                                    data: new Array(categorias.length).fill(null),  // Inicializa los datos con valores nulos
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    fill: false,  // No rellenar el área debajo de la línea
+                                    tension: 0.1,  // Suaviza la curva de la línea
+                                    pointRadius: 5,  // Añadir un punto visible
+                                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',  // Color del punto
+                                    pointHoverBackgroundColor: 'rgba(0, 123, 255, 1)',  // Color del punto al pasar el mouse
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Categorías'
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Valor'
+                                        },
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+
+                        // Si se ha determinado la categoría, colocar el valor en el gráfico
+                        if (categoriaIndex !== -1 && resultadoCalculado !== undefined) {
+                            chart.data.datasets[0].data[categoriaIndex] = resultadoCalculado;  // Coloca el valor calculado en la categoría correspondiente
+                            chart.update();  // Actualiza el gráfico
+                        }
+                    });
+                
+                    // Script para manejar el cierre del modal
+                    document.querySelector('#close-modal').addEventListener('click', function() {
+                        document.getElementById('result-modal').style.display = 'none';
+                    });
+        block content

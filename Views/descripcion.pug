@@ -1,0 +1,46 @@
+extends layout-navbar 
+block content
+    .card
+        a(href="/" class="back")
+            span(class="material-symbols-outlined") arrow_back
+        h1 Sobre los cálculos
+        
+    .card
+        h1 BMI (Índice de Masa Corporal)
+        p Es una herramienta que se usa en nutrición para determinar si una persona 
+            | tiene un peso saludable en relación con su altura.
+        p Fórmula:
+            p(style='font-size:14px') BMI = weight / (height / 100)^2
+        p Donde:
+        ul(style='list-style-type: none; color:grey; padding: 0')
+            li 
+                strong weight: 
+                | Peso en kilogramos.
+            li 
+                strong height: 
+                | Altura en centímetros.
+
+    .card
+        h1 IGC (Índice de Grasa Corporal)
+        p Es la proporción de grasa que tiene una persona en relación con su peso total.
+        p Fórmula para hombres:
+            p(style='font-size:14px') IGC = 495 / (1.0324 - 0.19077 * log10(waist - neck) + 0.15456 * log10(height)) - 450
+        p Fórmula para mujeres: 
+            p(style='font-size:14px') IGC = 495 / (1.29579 - 0.35004 * log10(waist + hip - neck) + 0.221 * log10(height)) - 450
+        p Donde:
+        ul(style='list-style-type: none; color:grey; padding: 0 ')
+            li 
+                strong waist: 
+                | Circunferencia de la cintura (en cm).
+            li 
+                strong hip: 
+                | Circunferencia de la cadera (en cm) (solo para mujeres).
+            li 
+                strong neck: 
+                | Circunferencia del cuello (en cm).
+            li 
+                strong height: 
+                | Altura en centímetros.
+    
+    .card
+        p Sin mas por agregar, puedes volver al inicio dandole a la flecha verde ⬅️

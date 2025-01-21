@@ -1,0 +1,31 @@
+.card {
+  background-color: #fff;
+  margin: 5px;
+  border-radius: 7px;
+  padding: 20px 20px;
+  width: 300px;
+  box-shadow: 1px 1px 25px -5px #777;
+}
+.card .material-symbols-outlined {
+  font-size: 21px;
+}
+.card .material-symbols-outlined:hover {
+  color: linear-gradient(#21BF64, #1AA153);
+}
+.card h1 {
+  text-align: center;
+  margin: 10px 0;
+}
+.card a {
+  text-decoration: none;
+  color: #27ae60;
+  font-weight: bold;
+  cursor: pointer;
+}
+.card p {
+  text-align: center;
+  font-size: 16px;
+  color: gray;
+}
+
+/*# sourceMappingURL=historial.css.map */

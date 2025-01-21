@@ -1,0 +1,52 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200")
+    link(rel="stylesheet", href="/css/auth.css")
+    link(rel="stylesheet", href="/css/styles.css")
+    
+    //- Incluyendo los estilos de Notyf
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css")
+    
+    title Iniciar sesión
+  body
+    .card
+      a(href="/" class="back")
+        span(class="material-symbols-outlined") arrow_back
+      h1 Iniciar Sesión
+      p Porfavor ingrese sus credenciales
+      form.login-form(action="/send-login" method='POST')
+        input(type="text" name="email" placeholder="Correo ✉️" required)
+        br
+        input(type="password" name="password" placeholder="Contraseña 🔑" required)
+        br
+        input(type="submit" value="Iniciar sesión")
+        br
+        p
+          | ¿No tienes cuenta? 
+          a(href="/signup") Registrate
+    
+    //- Script para inicializar Notyf
+    script(src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js")
+    script.
+      // Crear una instancia de Notyf
+      const notyf = new Notyf({
+        duration: 5000, // Duración de la notificación (ms)
+        position: {
+          x: 'right',
+          y: 'top'
+        },
+        dismissible: true, // Permitir cerrar la notificación manualmente
+      });
+
+      // Mostrar notificaciones si el mensaje está definido
+      if (typeof !{JSON.stringify(message)} !== 'undefined') {
+        const message = !{JSON.stringify(message)};
+        if (message.type === 'success') {
+          notyf.success(message.text);
+        } else if (message.type === 'error') {
+          notyf.error(message.text);
+        }
+      }

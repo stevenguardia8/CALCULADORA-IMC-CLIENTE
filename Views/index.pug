@@ -1,0 +1,94 @@
+extends layout-navbar 
+block content
+  .card
+    h1 Bienvenido a la calculadora
+    p Por favor selecciona una opción para calcular
+    select(id="form-select")
+      option(value="") Tipo de calculo
+      option(value="bmi") Calcular BMI
+      option(value="igc") Calcular IGC
+    br
+    br
+    // Formulario de calculo de bmi
+    .login-form(id="bmi-form", style="display: none")
+      form(action="/calc-bmi" method='POST')
+        input(type="number" name="weight" placeholder="Peso (kg) ✨" min="0" required)
+        br
+        input(type="number" name="height" placeholder="Altura (cm) ✨" min="0" required)
+        br
+        input(type="submit" value="Calcular")
+
+    // Formulario de calculo de igc
+    .login-form(id="igc-form", style="display: none")
+      form(action="/calc-igc" method='POST')
+        input(type="number" name="weight" placeholder="Peso (kg) ✨" min="0" required)
+        input(type="number" name="waist" placeholder="Circunferencia de cintura (cm) ✨" min="0" required)
+        input(type="number" name="hip" placeholder="Circunferencia de cadera (cm) ✨" min="0")
+        input(type="number" name="neck" placeholder="Circunferencia del cuello (cm) ✨" min="0" required)
+        input(type="number" name="height" placeholder="Altura (cm) ✨" min="0" required)
+        select(name="gender")
+            option(value="") Selecciona un género
+            option(value="male") Masculino
+            option(value="female") Femenino
+        br
+        br
+        input(type="submit" value="Calcular")
+
+  // Incluir el script directamente en el archivo Pug
+  script.
+    document.getElementById('form-select').addEventListener('change', function() {
+      const selectedValue = this.value;
+      const loginForm = document.getElementById('bmi-form');
+      const signupForm = document.getElementById('igc-form');
+
+      if (selectedValue === 'bmi') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+      } else if (selectedValue === 'igc') {
+        signupForm.style.display = 'block';
+        loginForm.style.display = 'none';
+      }else if(selectedValue === '') {
+        signupForm.style.display = 'none';
+        loginForm.style.display = 'none';
+      }
+    });
+    
+    // Mostrar/ocultar el campo de "hip" basado en el género seleccionado
+    const genderSelect = document.querySelector('select[name="gender"]');
+    const hipInput = document.querySelector('input[name="hip"]');
+    genderSelect.addEventListener('change', function() {
+      if (this.value === 'female') {
+        hipInput.style.display = 'block';
+      } else {
+        hipInput.style.display = 'none';
+      }
+    });
+
+    // Ocultar el campo de "hip" por defecto
+    document.addEventListener('DOMContentLoaded', function() {
+      const hipInput = document.querySelector('input[name="hip"]');
+      hipInput.style.display = 'none';
+    });
+
+  //- Script para inicializar Notyf
+  script(src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js")
+  script.
+      // Crear una instancia de Notyf
+      const notyf = new Notyf({
+        duration: 5000, // Duración de la notificación (ms)
+        position: {
+          x: 'right',
+          y: 'top'
+        },
+        dismissible: true, // Permitir cerrar la notificación manualmente
+      });
+
+      // Mostrar notificaciones si el mensaje está definido
+      if (typeof !{JSON.stringify(message)} !== 'undefined') {
+        const message = !{JSON.stringify(message)};
+        if (message.type === 'success') {
+          notyf.success(message.text);
+        } else if (message.type === 'error') {
+          notyf.error(message.text);
+        }
+      }
